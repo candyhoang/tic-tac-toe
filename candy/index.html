@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- <script src="https://pixijs.download/release/pixi.js"></script> -->
+    <script src="node_modules/pixi.js/dist/browser/pixi.js"></script>
+  </head>
+  <body>
+    <!-- This is the main heading -->
+    <h1>Enter game name here</h1>
+    <h2>Hi</h2>
+    <p style="color: red; font-size: 44px;">Hello Candy <i>this is italic</i> and <b>this is bold</b></p>
+    <script type="module">
+      // alert('Hi there!')
+
+      const language = window.navigator.language
+
+      // var language1 = window.navigator.language
+      // let language2 = window.navigator.language
+
+      // console.log(language)
+      // console.log(language === "en-US")
+
+      // console.log("a" === "a")
+      // console.log("a" === "b")
+      // console.log("abc efg 123" === "abc efg 123")
+      // console.log(1 === "1")
+      // console.log(1 == "1")
+      // console.log("a" === "A")
+      // console.log("a" == "A")
+
+      if (language === 'en-GB') {
+        // console.log('Hi fellow British reader')
+        document.querySelector('h1').textContent = 'Noughts & Crosses'
+      } else if (language === 'en-US') {
+        // console.log('Hi fellow American reader')
+        document.querySelector('h1').textContent = 'Tic-Tac-Toe'
+      } else {
+        // console.log('Hello person who can read in another language')
+        document.querySelector('h2').textContent = 2 * 5
+      }
+    </script>
+  </body>
+</html>
