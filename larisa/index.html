@@ -143,14 +143,12 @@
       const checker = (arr, target) => target.every(v => arr.includes(v))
 
       const getWinState = () => {
-        // console.log({taken})
-
+        // Horizontals
         {
           let x = 1
 
           while (x <= 3) {
             let line = []
-
             let y = 1
 
             while (y <= 3) {
@@ -159,15 +157,8 @@
               if (y === 3) {
                 const match = checker(taken, line)
 
-                // console.log({match})
-                // console.log({line})
-                // console.log({taken})
-
                 if (match) {
-                  // console.log('yes', x, y, player)
                   return true
-                } else {
-                  // console.log('no', x, y, player)
                 }
               }
 
@@ -178,12 +169,12 @@
           }
         }
 
+        // Verticals
         {
           let y = 1
 
           while (y <= 3) {
             let line = []
-
             let x = 1
 
             while (x <= 3) {
@@ -192,15 +183,8 @@
               if (x === 3) {
                 const match = checker(taken, line)
 
-                // console.log({match})
-                // console.log({line})
-                // console.log({taken})
-
                 if (match) {
-                  // console.log('yes', y, x, player)
                   return true
-                } else {
-                  // console.log('no', y, x, player)
                 }
               }
 
@@ -208,6 +192,33 @@
             }
 
             y++
+          }
+        }
+
+        // Diagonals
+        {
+          let line = []
+          line.push(JSON.stringify({x: 1, y: 1, player}))
+          line.push(JSON.stringify({x: 2, y: 2, player}))
+          line.push(JSON.stringify({x: 3, y: 3, player}))
+
+          const match = checker(taken, line)
+
+          if (match) {
+            return true
+          }
+        }
+
+        {
+          let line = []
+          line.push(JSON.stringify({x: 1, y: 3, player}))
+          line.push(JSON.stringify({x: 2, y: 2, player}))
+          line.push(JSON.stringify({x: 3, y: 1, player}))
+
+          const match = checker(taken, line)
+
+          if (match) {
+            return true
           }
         }
 
@@ -231,20 +242,21 @@
 
         const gridItem = JSON.stringify({...position, player})
 
-        // console.log({gridItem})
-
         taken.push(gridItem)
-
-        // console.log({taken})
       }
 
       const setGameOverState = (winner) => {
+        winState = true
+
         playArea.alpha = 0.25
         gameOverScreen.alpha = 1
 
         if (winner) {
           winnerMessage.text = `${player === 'cross' ? 'Crosses' : 'Noughts'} wins`
           winnerMessage.alpha = 1
+        } else {
+          winnerMessage.text = ''
+          winnerMessage.alpha = 0
         }
 
         // app.ticker.add(() => {
@@ -258,14 +270,14 @@
         // })
       }
 
-      // const setWinState = () => {
-      //   winState = true
-      //   playArea.alpha = 0.25
-      //   winScreen.alpha = 1
-      // }
-
       const onPointerDown = (event) => {
         if (turns >= 9) {
+          reset()
+          return
+        }
+
+        if (winState === true) {
+          reset()
           return
         }
 
@@ -303,7 +315,7 @@
         createMark(player, position)
 
         if (getWinState(player)) {
-          setGameOverState(player)
+          setGameOverState(player)  
         }
 
         player = player === 'cross' ? 'nought' : 'cross'
@@ -313,6 +325,31 @@
         if (turns >= 9) {
           setGameOverState()
         }
+      }
+
+      const setup = () => {
+        gameOverScreen = configureGameOverScreen()
+        grid = configureGrid()
+        playArea = configurePlayArea()
+
+        app.stage.addChild(gameOverScreen)
+        app.stage.addChild(playArea)
+        
+        playArea.addChild(grid)
+      }
+
+      const reset = () => {
+        turns = 0
+        winState = false
+        taken = []
+
+        gameOverScreen.parent.removeChild(gameOverScreen);
+        // gameOverScreen.destroy({children:true, texture:true, baseTexture:true});
+
+        playArea.parent.removeChild(playArea);
+        // playArea.destroy({children:true, texture:true, baseTexture:true});
+
+        setup()
       }
 
       const app = new PIXI.Application({
@@ -330,6 +367,9 @@
       let turns = 0
       let winState = false
       let taken = []
+      let gameOverScreen
+      let grid
+      let playArea
 
       const style = new PIXI.TextStyle({
         fontFamily: 'Arial',
@@ -354,18 +394,11 @@
       winnerMessage.x = -(winnerMessage.width / 2)
       winnerMessage.y = app.screen.height / 4
 
-      const playArea = configurePlayArea()
-      const grid = configureGrid()
-      const gameOverScreen = configureGameOverScreen()
-
       app.stage.interactive = true
-
-      app.stage.addChild(playArea)
-      app.stage.addChild(gameOverScreen)
 
       app.renderer.plugins.interaction.on('pointerdown', onPointerDown)
 
-      playArea.addChild(grid)
+      setup()
 
       document.body.appendChild(app.view)
     </script>
