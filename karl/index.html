@@ -2,63 +2,404 @@
 <html lang="en">
   <head>
     <style>
+      html {
+        box-sizing: border-box;
+        height: 100%;
+      }
+
+      *, *:before, *:after {
+        box-sizing: inherit;
+      }
+
+
       body {
-        background-image: url('./larisa/533316.jpg');
+        align-items: stretch;
+        background-image: url('./karl/tic-tacs-candy-colors-bright-colors.jpeg');
         background-size: cover;
+        display: grid;
+        height: 100%;
+        justify-content: center;
+        padding: 10vmax;
+      }
+
+      main {
+        align-items: center;
+        background-color: magenta;
+        display: grid;
+        font-size: 6rem;
+        justify-content: center;
+        padding: 10rem;
       }
     </style>
     <script src="node_modules/pixi.js/dist/browser/pixi.js"></script>
   </head>
   <body>
-    <main></main>
     <script type="module">
-      const app = new PIXI.Application({
-        antialias: true,
-        width: 640,
-        height: 360,
-        backgroundColor: 0x1099bb
-      });
+      const configureGrid = () => {
+        const gridGraphic = new PIXI.Graphics()
+        // gridGraphic.lineStyle(lineWidth, 0xA020F0, 1)
+        gridGraphic.lineStyle(lineWidth, 0x18A558, 1)
 
-      document.body.appendChild(app.view);
+        // Top Line
+        gridGraphic.moveTo(0, 200)
+        gridGraphic.lineTo(600, 200)
 
-      const container = new PIXI.Container();
+        // Bottom Line
+        gridGraphic.moveTo(0, 400)
+        gridGraphic.lineTo(600, 400)
 
-      // Move container to the center
-      // container.x = app.screen.width / 2;
-      // container.y = app.screen.height / 2;
+        // Left Line
+        gridGraphic.moveTo(200, 0)
+        gridGraphic.lineTo(200, 600)
 
-      // app.stage.addChild(container);
+        // Right Line
+        gridGraphic.moveTo(400, 0)
+        gridGraphic.lineTo(400, 600)
 
-      app.stage.interactive = true;
+        const grid = new PIXI.Container()
 
-      const nought = new PIXI.Graphics();
-      nought.beginFill(0xFFFF0B, 0.5);
-      nought.drawCircle(100, 100, 50);
-      nought.lineStyle(10, 0xFFBD01, 1);
-      nought.endFill();
+        grid.addChild(gridGraphic)
 
-      const cross = new PIXI.Graphics();
-      cross.lineStyle(10, 0xFFBD01, 1);
-      cross.lineTo(100, 100);
-      cross.moveTo(0, 100);
-      cross.lineTo(100, 0);
+        grid.pivot.set(grid.width / 2, grid.height / 2)
 
-      // nought.moveTo(30, 30);
-      // cross.moveTo(130, 130);
-
-      app.stage.addChild(nought);
-      app.stage.addChild(cross);
-
-      // Do something on click, then
-      // app.renderer.plugins.interaction.on('pointerdown', onPointerDown);
-
-      for (let i = 0; i < 25; i++) {
-          const duplicate = new PIXI.Graphics(nought.geometry);
-          // duplicate.anchor.set(0.5);
-          duplicate.x = (i % 5) * 40;
-          duplicate.y = Math.floor(i / 5) * 40;
-          // container.addChild(duplicate);
+        return grid
       }
+
+      const configureCross = () => {
+        const crossGraphic = new PIXI.Graphics()
+        crossGraphic.lineStyle(lineWidth, 0x545454, 1)
+        crossGraphic.lineTo(100, 100)
+        crossGraphic.moveTo(0, 100)
+        crossGraphic.lineTo(100, 0)
+
+        const cross = new PIXI.Container()
+
+        cross.addChild(crossGraphic)
+
+        cross.pivot.set(60, 60)
+
+        return cross
+      }
+
+      const configureNought = () => {
+        const noughtGraphic = new PIXI.Graphics()
+        noughtGraphic.lineStyle(lineWidth, 0xf2ebd3, 1)
+        noughtGraphic.drawCircle(0, 0, 50)
+
+        const nought = new PIXI.Container()
+
+        nought.addChild(noughtGraphic)
+
+        nought.pivot.set(5, 5)
+
+        return nought
+      }
+
+      const configurePlayArea = () => {
+        const playArea = new PIXI.Container()
+
+        playArea.x = app.screen.width / 2
+        playArea.y = app.screen.height / 2
+
+        return playArea
+      }
+
+      const configureGameOverScreen = () => {
+        const richText = new PIXI.Text('Game Over', style)
+        richText.pivot.set(richText.width / 2, richText.height / 2)
+
+        const gameOverScreen = new PIXI.Container()
+
+        gameOverScreen.addChild(richText)
+        gameOverScreen.addChild(winnerMessage)
+
+        gameOverScreen.x = app.screen.width / 2
+        gameOverScreen.y = app.screen.height / 2
+
+        gameOverScreen.alpha = 0
+
+        return gameOverScreen
+      }
+
+      const getPositionForGridArea = (area, dimension) => {
+        let position
+
+        switch (area) {
+          case 1:
+            position = playArea[dimension] / -3
+            break
+          case 2:
+            position = 0
+            break
+          case 3:
+            position = playArea[dimension] / 3
+            break
+        }
+
+        return position
+      }
+
+      const checker = (arr, target) => target.every(v => arr.includes(v))
+
+      const getWinState = () => {
+        // Horizontals
+        {
+          let x = 1
+
+          while (x <= 3) {
+            let line = []
+            let y = 1
+
+            while (y <= 3) {
+              line.push(JSON.stringify({x, y, player}))
+
+              if (y === 3) {
+                const match = checker(taken, line)
+
+                if (match) {
+                  return true
+                }
+              }
+
+              y++
+            }
+
+            x++
+          }
+        }
+
+        // Verticals
+        {
+          let y = 1
+
+          while (y <= 3) {
+            let line = []
+            let x = 1
+
+            while (x <= 3) {
+              line.push(JSON.stringify({x, y, player}))
+
+              if (x === 3) {
+                const match = checker(taken, line)
+
+                if (match) {
+                  return true
+                }
+              }
+
+              x++
+            }
+
+            y++
+          }
+        }
+
+        // Diagonals
+        {
+          let line = []
+          line.push(JSON.stringify({x: 1, y: 1, player}))
+          line.push(JSON.stringify({x: 2, y: 2, player}))
+          line.push(JSON.stringify({x: 3, y: 3, player}))
+
+          const match = checker(taken, line)
+
+          if (match) {
+            return true
+          }
+        }
+
+        {
+          let line = []
+          line.push(JSON.stringify({x: 1, y: 3, player}))
+          line.push(JSON.stringify({x: 2, y: 2, player}))
+          line.push(JSON.stringify({x: 3, y: 1, player}))
+
+          const match = checker(taken, line)
+
+          if (match) {
+            return true
+          }
+        }
+
+        return false
+      }
+
+      const createMark = (type, position) => {
+        const {x, y} = position
+        let mark
+
+        if (type === 'cross') {
+          mark = configureCross()
+        } else {
+          mark = configureNought()
+        }
+
+        mark.x = getPositionForGridArea(x, 'width')
+        mark.y = getPositionForGridArea(y, 'height')
+
+        playArea.addChild(mark)
+
+        const gridItem = JSON.stringify({...position, player})
+
+        taken.push(gridItem)
+      }
+
+      const setGameOverState = (winner) => {
+        winState = true
+
+        playArea.alpha = 0.25
+        gameOverScreen.alpha = 1
+
+        if (winner) {
+          winnerMessage.text = `${player === 'cross' ? 'Crosses' : 'Noughts'} wins`
+          winnerMessage.alpha = 1
+        } else {
+          winnerMessage.text = ''
+          winnerMessage.alpha = 0
+        }
+
+        // app.ticker.add(() => {
+        //   count += 0.005
+
+        //   const blurAmount = Math.cos(count)
+        //   const blurAmount2 = Math.sin(count)
+
+        //   blurFilter1.blur = 20 * (blurAmount)
+        //   blurFilter2.blur = 20 * (blurAmount2)
+        // })
+      }
+
+      const onPointerDown = (event) => {
+        if (turns >= 9) {
+          reset()
+          return
+        }
+
+        if (winState === true) {
+          reset()
+          return
+        }
+
+        const {global} = event.data
+
+        let x = 1
+        let y = 1
+
+        const gridSize = (playArea.height / 3)
+
+        if (global.x > (gridSize + (lineWidth / 2))) {
+          x = 2
+        }
+
+        if (global.x > (gridSize * 2 + (lineWidth / 2))) {
+          x = 3
+        }
+
+        if (global.y > (gridSize + (lineWidth / 2))) {
+          y = 2
+        }
+
+        if (global.y > (gridSize * 2 + (lineWidth / 2))) {
+          y = 3
+        }
+
+        const position = {x, y}
+
+        const exists = taken.includes(JSON.stringify({...position, player: 'nought'})) || taken.includes(JSON.stringify({...position, player: 'cross'}))
+
+        if (exists) {
+          return
+        }
+
+        createMark(player, position)
+
+        if (getWinState(player)) {
+          setGameOverState(player)  
+        }
+
+        player = player === 'cross' ? 'nought' : 'cross'
+
+        turns++
+
+        if (turns >= 9) {
+          setGameOverState()
+        }
+      }
+
+      const setup = () => {
+        gameOverScreen = configureGameOverScreen()
+        grid = configureGrid()
+        playArea = configurePlayArea()
+
+        app.stage.addChild(gameOverScreen)
+        app.stage.addChild(playArea)
+        
+        playArea.addChild(grid)
+      }
+
+      const reset = () => {
+        turns = 0
+        winState = false
+        taken = []
+
+        gameOverScreen.parent.removeChild(gameOverScreen);
+        // gameOverScreen.destroy({children:true, texture:true, baseTexture:true});
+
+        playArea.parent.removeChild(playArea);
+        // playArea.destroy({children:true, texture:true, baseTexture:true});
+
+        setup()
+      }
+
+      const app = new PIXI.Application({
+        // backgroundColor: 0xFF00FF,
+        antialias: true,
+        autoDensity: true,
+        height: 600,
+        resolution: 2,
+        transparent: true,
+        width: 600,
+      })
+      
+      const lineWidth = 10
+      let player = 'nought'
+      let turns = 0
+      let winState = false
+      let taken = []
+      let gameOverScreen
+      let grid
+      let playArea
+
+      const style = new PIXI.TextStyle({
+        fontFamily: 'Arial',
+        fontSize: 64,
+        fontStyle: 'italic',
+        fontWeight: 'bold',
+        fill: ['#ffffff', '#00ff99'], // gradient
+        stroke: '#4a1850',
+        strokeThickness: 5,
+        dropShadow: true,
+        dropShadowColor: '#000000',
+        dropShadowBlur: 4,
+        dropShadowAngle: Math.PI / 6,
+        dropShadowDistance: 6,
+        wordWrap: true,
+        wordWrapWidth: 440,
+        lineJoin: 'round',
+      })
+
+      const winnerMessage = new PIXI.Text(player, style)
+      winnerMessage.pivot.set(winnerMessage.width / 2, winnerMessage.height / 2)
+      winnerMessage.x = -(winnerMessage.width / 2)
+      winnerMessage.y = app.screen.height / 4
+
+      app.stage.interactive = true
+
+      app.renderer.plugins.interaction.on('pointerdown', onPointerDown)
+
+      setup()
+
+      document.body.appendChild(app.view)
     </script>
   </body>
 </html>
