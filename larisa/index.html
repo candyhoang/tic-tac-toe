@@ -1,12 +1,137 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Shizuru&display=swap" rel="stylesheet">
     <script src="node_modules/pixi.js/dist/browser/pixi.js"></script>
+    <style>
+      * {
+        color: #80d8ff;
+      }
+
+      html {
+        /* min-height: 100%; */
+      }
+
+      body {
+        align-content: center;
+        background-image: url(./larisa/cool-geometric-triangular-figure-neon-laser-light-great-backgrounds.jpg);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        display: grid;
+        min-height: 100vh;
+        justify-content: center;
+        margin: 0;
+      }
+
+      h1 {
+        font-family: 'Shizuru', cursive;
+        text-shadow: 0 0 3px #80d8ff, 0 0 10px #80d8ff, 0 0 15px #80d8ff, 0 0 20px #80d8ff, 0 0 30px #80d8ff, 0 0 40px #80d8ff, 0 0 55px #80d8ff, 0 0 75px #80d8ff, 2px 2px 2px rgba(128,216,255,0);
+        text-align: center;
+        text-transform: uppercase;
+      }
+    </style>
   </head>
   <body>
-    <h1>Tic-Tac-Toe</h1>
+    <h1>mick tack toe homer</h1>
     <script type="module">
+      const configureGrid = () => {
+        const gridGraphic = new PIXI.Graphics()
+        var blurFilter = new PIXI.filters.BlurFilter()
+        blurFilter.blur = 2
 
+        // gridGraphic.lineStyle(lineWidth, 0xA020F0, 1)
+        gridGraphic.lineStyle(lineWidth, 0x80d8ff, 1)
+
+        // Top Line
+        gridGraphic.moveTo(0, app.screen.width * 0.33)
+        gridGraphic.lineTo(app.screen.width, app.screen.width * 0.33)
+
+        // Bottom Line
+        gridGraphic.moveTo(0, app.screen.width * 0.66)
+        gridGraphic.lineTo(app.screen.width, app.screen.width * 0.66)
+
+        // Left Line
+        gridGraphic.moveTo(app.screen.width * 0.33, 0)
+        gridGraphic.lineTo(app.screen.width * 0.33, app.screen.width)
+
+        // Right Line
+        gridGraphic.moveTo(app.screen.width * 0.66, 0)
+        gridGraphic.lineTo(app.screen.width * 0.66, app.screen.width)
+
+        gridGraphic.filters = [blurFilter]
+        gridGraphic.resolution = 2
+
+        const grid = new PIXI.Container()
+
+        grid.addChild(gridGraphic)
+
+        grid.pivot.set(grid.width / 2, grid.height / 2)
+
+        return grid
+      }
+
+      const configurePlayArea = () => {
+        const playArea = new PIXI.Container()
+
+        playArea.x = app.screen.width / 2
+        playArea.y = app.screen.height / 2
+
+        return playArea
+      }
+
+      const setup = () => {
+        // gameOverScreen = configureGameOverScreen()
+        grid = configureGrid()
+        playArea = configurePlayArea()
+
+        // app.stage.addChild(gameOverScreen)
+        app.stage.addChild(playArea)
+        
+        playArea.addChild(grid)
+      }
+
+      const reset = () => {
+        turns = 0
+        winState = false
+        taken = []
+
+        gameOverScreen.parent.removeChild(gameOverScreen);
+
+        playArea.parent.removeChild(playArea);
+
+        setup()
+      }
+
+      const lineWidth = 10
+      let player = 'nought'
+      let turns = 0
+      let winState = false
+      let taken = []
+      let gameOverScreen
+      let grid
+      let playArea
+      let innerHeight = window.innerHeight;
+
+      const app = new PIXI.Application({
+        // backgroundColor: 0xFF00FF,
+        antialias: true,
+        autoDensity: true,
+        height: innerHeight / 2,
+        resolution: 2,
+        transparent: true,
+        width: innerHeight / 2,
+      })
+
+      app.stage.interactive = true
+
+      // app.renderer.plugins.interaction.on('pointerdown', onPointerDown)
+
+      setup()
+
+      document.body.appendChild(app.view)
     </script>
   </body>
 </html>

@@ -1,10 +1,10 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredericka+the+Great&display=swap" rel="stylesheet">
-    <style>
+    <head>
+        <link href="https://fonts.googleapis.com" rel="preconnect"/>
+        <link crossorigin href="https://fonts.gstatic.com" rel="preconnect"/>
+        <link href="https://fonts.googleapis.com/css2?family=Fredericka+the+Great&display=swap" rel="stylesheet"/>
+        <style>
       :root {
         --chalk-color: rgba(255, 255, 255, 0.75);
         --chalk-opacity: 0.5;
@@ -16,7 +16,7 @@
 
       html {
         background-color: #000;
-        font-family: 'Fredericka the Great', cursive;
+        font-family: "Fredericka the Great", cursive;
         height: 100vh;
       }
 
@@ -49,7 +49,7 @@
         justify-content: space-evenly;
       }
 
-      main div {
+      .panel {
         align-items: center;
         aspect-ratio: 1;
         /* background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' stroke='rgba(255, 255, 255, 0.25)' stroke-width='10' stroke-dasharray='2%2c 6' stroke-dashoffset='28' stroke-linecap='butt'/%3e%3c/svg%3e"); */
@@ -71,11 +71,11 @@
         border-inline-end-color: var(--chalk-color);
       }
 
-      main div:nth-child(-n+3) {
+      main div:nth-child(-n + 3) {
         border-block-end-color: var(--chalk-color);
       }
 
-      main div:nth-last-child(-n+3) {
+      main div:nth-last-child(-n + 3) {
         border-block-start-color: var(--chalk-color);
       }
 
@@ -83,6 +83,7 @@
         text-decoration: none;
       }
 
+      a,
       span {
         display: block;
       }
@@ -122,65 +123,95 @@
       }
 
       @keyframes sway-1 {
-        0%, 100% {
+        0%,
+        100% {
           transform: rotate(-6deg);
         }
-        
+
         50% {
           transform: rotate(6deg);
         }
       }
 
       @keyframes sway-2 {
-        0%, 100% {
+        0%,
+        100% {
           transform: rotate(5deg);
         }
-        
+
         50% {
           transform: rotate(-5deg);
         }
       }
 
       @keyframes pulse-1 {
-        0%, 30%, 100% {
-          transform: scale(1,1);
+        0%,
+        30%,
+        100% {
+          transform: scale(1, 1);
         }
-        
-        15%, 45% {
+
+        15%,
+        45% {
           transform: scale(1.15, 1.15);
         }
       }
 
       @keyframes pulse-2 {
-        0%, 100% {
-          transform: scale(1,1);
+        0%,
+        100% {
+          transform: scale(1, 1);
         }
-        
+
         50% {
           transform: scale(1.15, 1.15);
         }
       }
     </style>
-  </head>
-  <body>
-    <h1>Noughts & Crosses</h1>
-    <main>
-      <div><a class="initial" href="./candy" title="Candy's Game"><span>C</span></a></div>
-      <div><span class="heart"><span>❤️</span></span></div>
-      <div><span class="heart"><span>❤️</span></span></div>
-      <div></div>
-      <div><a class="initial" href="./larisa" title="Larisa's Game"><span>L</span></a></div>
-      <div><a class="initial" href="./karl" title="Karl's Game"><span>K</span></a></div>
-      <div><span class="heart"><span>❤️</span></span></div>
-      <div></div>
-      <div></div>
-    </main>
-    <audio controls autoplay loop>
-      <source src="./assets/Soliloquy.mp3" type="audio/mpeg">
-    </audio>
-    <script type="module">
-      const audio = document.querySelector('audio');
-      audio.volume = 0.5;
-    </script>
-  </body>
+    </head>
+    <body>
+        <h1>Noughts & Crosses</h1>
+        <main>
+            <div class="panel">
+                <a class="initial" href="./candy" title="Candy's Game">
+                    <span>C</span>
+                </a>
+            </div>
+            <div class="panel">
+                <div class="heart">
+                    <span>❤️</span>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="heart">
+                    <span>❤️</span>
+                </div>
+            </div>
+            <div class="panel"></div>
+            <div class="panel">
+                <a class="initial" href="./larisa" title="Larisa's Game">
+                    <span>L</span>
+                </a>
+            </div>
+            <div class="panel">
+                <a class="initial" href="./karl" title="Karl's Game">
+                    <span>K</span>
+                </a>
+            </div>
+            <div class="panel">
+                <div class="heart">
+                    <span>❤️</span>
+                </div>
+            </div>
+            <div class="panel"></div>
+            <div class="panel"></div>
+        </main>
+        <audio autoplay controls loop>
+            <source src="./assets/Soliloquy.mp3" type="audio/mpeg"/>
+        </audio>
+        <script type="module">
+            const audio = document.querySelector("audio");
+            audio.volume = 0.5;
+        </script>
+    </body>
 </html>
